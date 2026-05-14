@@ -1,137 +1,37 @@
-<<<<<<< HEAD
-# ⚡ ArcNexus
+# ArcPulse
 
-> The Complete DeFi Gateway — Built on Arc Testnet
+A full DeFi gateway built from scratch on Arc Testnet.
 
-🌐 **Live Site:** [arcnexus.netlify.app](https://arcnexus.netlify.app)
-💾 **GitHub:** [github.com/selinisdil/arcnexus](https://github.com/selinisdil/arcnexus)
-🐦 **X (Twitter):** [x.com/selinisdil](https://x.com/selinisdil?s=21)
+Live: https://xarcpulse.netlify.app
 
----
+## What it does
 
-## ✨ Features
+**Swap** � USDC and EURC swaps on Arc Testnet via a custom AMM contract written in Solidity. Handles pool management, price estimation via getAmountOut(), and on-chain execution. Uses a custom RPC polling mechanism instead of MetaMask's default tx.wait() to handle Arc Testnet's receipt behavior reliably.
 
-### 🌉 Bridge
-Cross-chain USDC transfers powered by **Circle CCTP V2**. Fast, secure, trustless bridging between Arc Testnet and Ethereum Sepolia.
+**Bridge** � Cross-chain USDC transfers between Arc Testnet and Ethereum Sepolia using Circle CCTP V2. depositForBurn() on source chain, Circle attestation, receiveMessage() on destination. No wrapped tokens, no custodians.
 
-### 🔄 Swap
-Swap **USDC ↔ EURC** on Arc Testnet with real-time price estimates via on-chain AMM contract.
+**RefundPay** � On-chain escrow with dispute resolution. Sender locks USDC or EURC in the contract, recipient delivers, sender approves and funds are released. If there is a dispute, a pre-agreed arbiter decides. Four states: PENDING, COMPLETED, REFUNDED, DISPUTED.
 
-### 🛡️ Refund Pay
-On-chain escrow payment system with full dispute resolution:
-- Lock USDC or EURC in a smart contract
-- Recipient delivers service
-- Sender approves → funds released
-- Dispute raised → Arbiter decides
+**Dashboard** � Live USDC and EURC balances on both Arc Testnet and Ethereum Sepolia, read directly from token contracts via ethers.js v6.
 
-### 📊 Dashboard
-Track your USDC and EURC balances across Arc Testnet and Ethereum Sepolia in one place.
+**History** � Full transaction history via Arc API with automatic refresh.
 
-### 📜 History
-Full transaction history with real-time updates via Arc API with automatic refresh.
+**Send** � Simple USDC and EURC transfers with client-side address validation.
 
----
+## Contracts (Arc Testnet � Chain ID: 5042002)
 
-## 📦 Smart Contracts
-
-All contracts are deployed on **Arc Testnet (Chain ID: 5042002)**.
-
-### Escrow Contract (RefundPay)
-```
-Address:  0xbDC1e9bf597458A02De818c10dA70061BbE5d514
-Explorer: https://testnet.arcscan.app/address/0xbDC1e9bf597458A02De818c10dA70061BbE5d514
-```
-
-**Contract States:**
-```
-PENDING   → Payment locked, waiting for approval
-COMPLETED → Sender approved, funds sent to recipient
-REFUNDED  → Arbiter refunded funds back to sender
-DISPUTED  → Under dispute, waiting for arbiter decision
-```
-
-**Key Functions:**
-```solidity
-createPayment(recipient, arbiter, token, amount, description)
-approvePayment(id)   // Sender or arbiter releases funds
-refundPayment(id)    // Arbiter refunds to sender
-disputePayment(id)   // Sender or recipient raises dispute
-getPayment(id)       // Read payment details
-```
-
-### Swap Contract
-```
-Address:  0x6e40f9AEB9cA2B24c2049F1553Fb3D272c114408
-Explorer: https://testnet.arcscan.app/address/0x6e40f9AEB9cA2B24c2049F1553Fb3D272c114408
-```
-
-**Key Functions:**
-```solidity
-swap(tokenIn, tokenOut, amountIn)
-getAmountOut(tokenIn, amountIn)
-getPoolBalances()
-```
-
-### Token Addresses (Arc Testnet)
-```
-USDC: 0x3600000000000000000000000000000000000000
-EURC: 0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a
-```
-
----
-
-## 🌉 Bridge — Circle CCTP V2
-
-**How it works:**
-1. User approves USDC to the CCTP contract on Arc
-2. `depositForBurn()` is called — USDC is burned on source chain
-3. Circle attestation service signs the burn proof
-4. `receiveMessage()` is called on destination chain — USDC is minted
-
-**Supported Routes:**
-```
-Arc Testnet      →  Ethereum Sepolia
-Ethereum Sepolia →  Arc Testnet
-```
-
----
-
-## 🛡️ RefundPay — Escrow Flow
-
-```
-[Sender] → createPayment() → [Smart Contract locks funds]
-                                        ↓
-                             [Recipient delivers]
-                                        ↓
-            ┌─────────────────────────────────────────┐
-            │                                         │
-         [Approve]                               [Dispute]
-            │                                         │
-  funds → recipient                         arbiter decides
-                                           /               \
-                                      [Approve]          [Refund]
-                                   funds→recipient    funds→sender
-```
-
----
-
-## 🛠️ Tech Stack
-
-| Technology | Usage |
+| Contract | Address |
 |---|---|
-| React.js | Frontend |
-| ethers.js v6 | Wallet & contract interaction |
-| Circle CCTP V2 | Cross-chain bridge protocol |
-| Solidity 0.8.19 | Smart contracts |
-| Hardhat 2.x | Contract development & deployment |
-| Arc Testnet | EVM-compatible network |
-| Netlify | Hosting |
+| RefundPay | 0xbDC1e9bf597458A02De818c10dA70061BbE5d514 |
+| SwapPool | 0x20eF12b38D59CFA4e7A190e88e54cDaf3c7efB99 |
+| USDC | 0x3600000000000000000000000000000000000000 |
+| EURC | 0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a |
 
----
+## Stack
 
-## 🌐 Network Configuration
+React.js, ethers.js v6, Solidity 0.8.19, Hardhat, Circle CCTP V2, Netlify
 
-Add Arc Testnet to MetaMask:
+## Network
 
 | Field | Value |
 |---|---|
@@ -141,35 +41,15 @@ Add Arc Testnet to MetaMask:
 | Currency Symbol | ARC |
 | Block Explorer | https://testnet.arcscan.app |
 
----
+## Getting Started
 
-## 🚀 Getting Started
-
-```bash
-git clone https://github.com/selinisdil/arcnexus.git
-cd arcnexus
+git clone https://github.com/ayhansumen/ArcPulse.git
+cd ArcPulse
 npm install
 npm start
-```
 
----
+## Links
 
-## 🔗 Links
-
-| | |
-|---|---|
-| 🌐 Live Site | [arcnexus.netlify.app](https://arcnexus.netlify.app) |
-| 💾 GitHub | [github.com/selinisdil/arcnexus](https://github.com/selinisdil/arcnexus) |
-| 🐦 X (Twitter) | [x.com/selinisdil](https://x.com/selinisdil?s=21) |
-| 🔍 Explorer | [testnet.arcscan.app](https://testnet.arcscan.app) |
-| 📚 Arc Docs | [docs.arc.network](https://docs.arc.network) |
-
----
-
-## 📄 License
-
-MIT
-=======
-# ArcPulse
-Decentralized freelance escrow platform on Arc
->>>>>>> 70a419334fdafdca765412d964cbf9b0b7073a85
+- Live App: https://xarcpulse.netlify.app
+- Explorer: https://testnet.arcscan.app
+- Arc Docs: https://docs.arc.network
